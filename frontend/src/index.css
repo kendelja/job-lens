@@ -1,0 +1,456 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: #f6f7fb;
+    color: #172033;
+}
+
+.app {
+    min-height: 100vh;
+}
+
+
+/* --------------------
+   TOP BAR
+-------------------- */
+
+.topbar {
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 48px;
+
+    background: #111827;
+    color: white;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.topbar p {
+    margin: 2px 0 0;
+
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.job-count {
+    font-size: 14px;
+    color: #c7d2fe;
+}
+
+
+/* --------------------
+   DASHBOARD
+-------------------- */
+
+.dashboard {
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 55px 24px 80px;
+}
+
+
+/* --------------------
+   HERO
+-------------------- */
+
+.hero {
+    margin-bottom: 32px;
+}
+
+.hero h1 {
+    margin: 0;
+
+    font-size: 38px;
+    line-height: 1.1;
+
+    letter-spacing: -1.5px;
+
+    color: #111827;
+}
+
+.hero p {
+    margin-top: 12px;
+
+    color: #6b7280;
+
+    font-size: 16px;
+}
+
+
+/* --------------------
+   FILTERS
+-------------------- */
+
+.filters {
+    display: flex;
+
+    gap: 12px;
+
+    margin-bottom: 30px;
+}
+
+.search-wrapper {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 15px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.search-wrapper span {
+    font-size: 22px;
+    color: #9ca3af;
+}
+
+.search-wrapper input {
+    width: 100%;
+
+    padding: 13px 0;
+
+    border: none;
+    outline: none;
+
+    font-size: 14px;
+
+    background: transparent;
+}
+
+.filters select {
+    padding: 0 14px;
+
+    min-width: 150px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    outline: none;
+}
+
+
+/* --------------------
+   RESULTS
+-------------------- */
+
+.results-header {
+    margin-bottom: 12px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+
+/* --------------------
+   JOB LIST
+-------------------- */
+
+.job-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+/* --------------------
+   JOB CARD
+-------------------- */
+
+.job-card {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 20px 22px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #c7d2fe;
+
+    box-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.07);
+}
+
+
+/* --------------------
+   COMPANY LOGO
+-------------------- */
+
+.company-logo {
+    flex-shrink: 0;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #f3f4f6;
+
+    border: 1px solid #e5e7eb;
+
+    overflow: hidden;
+}
+
+.company-logo img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    padding: 8px;
+}
+
+.company-logo span {
+    font-size: 22px;
+
+    font-weight: 700;
+
+    color: #6366f1;
+}
+
+
+/* --------------------
+   JOB CONTENT
+-------------------- */
+
+.job-content {
+    flex: 1;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 30px;
+}
+
+.job-main h2 {
+    margin: 0 0 5px;
+
+    font-size: 17px;
+
+    color: #111827;
+
+    letter-spacing: -0.2px;
+}
+
+.company {
+    font-size: 14px;
+
+    color: #6b7280;
+
+    font-weight: 500;
+}
+
+.job-meta {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 11px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+
+/* --------------------
+   TAGS
+-------------------- */
+
+.tag {
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+.remote {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+
+/* --------------------
+   RIGHT SIDE
+-------------------- */
+
+.job-right {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    gap: 8px;
+}
+
+.salary {
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #111827;
+
+    white-space: nowrap;
+}
+
+.source {
+    padding: 4px 8px;
+
+    border-radius: 6px;
+
+    background: #f3f4f6;
+
+    color: #6b7280;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    font-weight: 700;
+}
+
+
+/* --------------------
+   VIEW JOB
+-------------------- */
+
+.view-job {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #111827;
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 18px;
+
+    transition: background 0.15s ease;
+}
+
+.view-job:hover {
+    background: #4f46e5;
+}
+
+
+/* --------------------
+   MOBILE
+-------------------- */
+
+@media (max-width: 750px) {
+
+    .topbar {
+        padding: 0 20px;
+    }
+
+    .dashboard {
+        padding: 35px 15px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+
+    .filters select {
+        height: 45px;
+    }
+
+    .job-card {
+        align-items: flex-start;
+    }
+
+    .job-content {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .job-right {
+        align-items: flex-start;
+    }
+
+}

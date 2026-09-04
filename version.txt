@@ -1,0 +1,16 @@
+JobLens - Jace Kendel
+
+V1.0 - Setup backend, API, and frontend
+     - Setup PostgreSQL DB for holding job posting property data
+     - Identified job posting sites to scrape from (BuiltIn, Wellfound for now)
+     - Created Scraping and parsing files for each site, utilized for data ingestion
+     - Utilized pipeline, normalizer, dedeuplicator and validator to ensure cleanliness and checks
+     - Successfully connected backend and frontend and displayed data on frontend
+     - Modernized frontend (Better layout, filtering, company logos, source)
+
+TODO: - Gather 1-2 more sites 
+      - Clean flagged files (Is all that data being used?)
+      - Pagenation and access to pages from sites, believe we are only gathering from 1 page rn
+      - Better filtering (Location filter doesnt work, add sort by newest, experience)
+      - Etc.
+      - Will I add AI to this so it can find me best matched jobs? (No linkedin premium fees)
