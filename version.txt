@@ -8,13 +8,13 @@ V1.0 - Setup backend, API, and frontend
      - Successfully connected backend and frontend and displayed data on frontend
      - Modernized frontend (Better layout, filtering, company logos, source)
 
-1.1  - Fixed job URL links to allow apply button to work
+V1.1  - Fixed job URL links to allow apply button to work
      - Fixed location for Wellfound jobs being a salary value instead of loc
      - Got some of Remote type working - switched it to bool value, but logic is wrong
           (all fields are false rn), if T/F then filter works for remote and can just display
           remote attribute on job card on JobLens
 
-V1.1 - Expanded multi-source ingestion and improved scraping
+V1.2 - Expanded multi-source ingestion and improved scraping
      - Updated Wellfound parser to extract multiple job positions from a single company card
      - Added support for relative posting times including days, weeks, months, and years
      - Fixed source job ID handling for reliable database deduplication
