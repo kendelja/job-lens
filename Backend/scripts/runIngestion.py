@@ -1,3 +1,5 @@
+import asyncio
+
 from app.ingestion.pipeline import run_pipeline
 
 from app.ingestion.scrapers.BuiltInScraper import BuiltInScraper
@@ -7,15 +9,15 @@ from app.ingestion.scrapers.WellfoundScraper import WellfoundScraper
 from app.ingestion.parsers.WellfoundParser import WellfoundParser
 
 
-def main():
+async def main():
 
-    run_pipeline(
+    await run_pipeline(
         BuiltInScraper(),
         BuiltInParser(),
         "Built In"
     )
 
-    run_pipeline(
+    await run_pipeline(
         WellfoundScraper(),
         WellfoundParser(),
         "Wellfound"
@@ -23,4 +25,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

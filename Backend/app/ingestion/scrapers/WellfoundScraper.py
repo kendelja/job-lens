@@ -1,4 +1,4 @@
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
 
 
 class WellfoundScraper:
@@ -8,29 +8,30 @@ class WellfoundScraper:
     def __init__(self, headless=True):
         self.headless = headless
 
-    def fetch_page(self, url: str) -> str:
-        with sync_playwright() as p:
-
-            browser = p.chromium.launch(
+    async def fetch_page(self, url: str) -> str:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(
                 headless=self.headless
             )
 
-            page = browser.new_page()
+            page = await browser.new_page()
 
-            page.goto(
+            await page.goto(
                 url,
                 wait_until="domcontentloaded"
             )
 
-            page.wait_for_timeout(2000)
+            await page.wait_for_timeout(2000)
 
-            html = page.content()
+            html = await page.content()
 
-            browser.close()
+            await browser.close()
 
             return html
-    #NOTE: This is only filtering canada jobs, would need to supplement in location + need filters to change output later 
-    def fetch_jobs_page(self) -> str:
-        url = f"{self.BASE_URL}/location/canada-startups"
 
-        return self.fetch_page(url)
+    # NOTE: This is only filtering Canada jobs,
+    # would need to supplement in location + need filters
+    # to change output later
+    async def fetch_jobs_page(self) -> str:
+        url = f"{self.BASE_URL}/location/canada-startups"
+        return await self.fetch_page(url)

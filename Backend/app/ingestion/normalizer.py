@@ -20,6 +20,7 @@ def normalize_job(raw_job: dict) -> Job:
         url=raw_job.get("url"),
 
         posted_at=parse_date(raw_job.get("posted_at")),
+        
 
         experience_level=clean_text(
             raw_job.get("experience_level")
@@ -29,9 +30,9 @@ def normalize_job(raw_job: dict) -> Job:
             raw_job.get("employment_type")
         ),
 
-        remote_type=clean_text(
-            raw_job.get("remote_type")
-        ),
+        remote_type=bool(raw_job.get("remote_type")),
+
+
 
         salary_min=raw_job.get("salary_min"),
         salary_max=raw_job.get("salary_max"),

@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from app.api.jobs import router as jobs_router
 from fastapi.middleware.cors import CORSMiddleware
 
-
-
 app = FastAPI(
     title="JobLens API",
     version="1.0.0"

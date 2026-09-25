@@ -1,33 +1,31 @@
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
 import re
+from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
 
-
-
-#NOTE: DO I NEED ALL THIS DATA?
 
 class WellfoundParser:
 
-    # Helper Function to compute time posted from job card (Ex. 2 hours ago, 54 seconds ago and then subtract that from current time)
+    # ---------------------------------------------------------
+    # Helper: Convert relative posted time into datetime
+    # ---------------------------------------------------------
     def parse_posted_time(self, posted_text: str | None):
         if not posted_text:
             return None
 
         text = posted_text.lower().strip()
+        now = datetime.now()
 
-        # BuiltIn sometimes says "Reposted"
-        if "reposted" in text:
-            return None
+        # Special cases
+        if text == "today":
+            return now
 
-        # Find the number anywhere in the text
+        # Numeric relative times
         match = re.search(r"\d+", text)
 
         if not match:
             return None
 
         value = int(match.group())
-
-        now = datetime.now()
 
         if "second" in text:
             return now - timedelta(seconds=value)
@@ -41,101 +39,43 @@ class WellfoundParser:
         if "day" in text:
             return now - timedelta(days=value)
 
+        if "week" in text:
+            return now - timedelta(weeks=value)
+
+        if "month" in text:
+            # Approximation — useful for sorting/displaying
+            return now - timedelta(days=value * 30)
+
+        if "year" in text:
+            # Approximation
+            return now - timedelta(days=value * 365)
+
         return None
 
     def parse(self, html: str) -> list[dict]:
-
         soup = BeautifulSoup(html, "html.parser")
-
         jobs = []
 
-        # Each job card has data-id="job-card"
-        job_cards = soup.select('div.mb-6.w-full.rounded.border.border-gray-400.bg-white')
+        # Each company card
+        job_cards = soup.select(
+            "div.mb-6.w-full.rounded.border.border-gray-400.bg-white"
+        )
 
         for card in job_cards:
 
-            # Job title
-            title_element = card.select_one('.mr-2.text-sm.font-semibold.text-brand-burgandy.hover\\:underline')
+            # -----------------------------------
+            # COMPANY-LEVEL INFORMATION
+            # -----------------------------------
 
-            # Company
-            company_element = card.select_one('.text-neutral-1000.hover\\:underline.focus\\:no-underline')
-
-            # Job URL
-            link_element = card.select_one('.mr-2.text-sm.font-semibold.text-brand-burgandy.hover\\:underline')
-
-            # Date
-            time_element = card.select_one('.text-xs.lowercase.text-dark-a.md\\:hidden')
-
-            # Location + Remote handling
-            location_element = card.select_one(".pl-1.text-xs")
-
-            if location_element:
-                location_text = location_element.get_text(" ", strip=True)
-            else:
-                location_text = None
-
-            if location_text:
-                if "Remote only" in location_text:
-                    remote_type = "Remote only"
-                    location = location_text.replace("Remote only • ", "")
-                
-                elif "Remote" in location_text:
-                    remote_type = "Remote"
-                    location = location_text.replace("Remote • ", "")
-                
-                else:
-                    remote_type = None
-                    location = location_text
-            else:
-                remote_type = None
-                location = None
-
-            # # Remote / onsite
-            # remote_element = card.select_one('.fa-house-building')
-
-            # if remote_element:
-            #     remote_container = remote_element.parent.parent
-            #     remote = remote_container.get_text(strip=True)
-            # else:
-            #     remote = None
-
-            # Salary
-            salary_element = card.find("span",class_="pl-1 text-xs",string=re.compile(r"\$"))
-
-            if salary_element:
-                salary = salary_element.get_text(strip=True)
-            else:
-                salary = None
-
-            # Experience level
-            experience_element = card.select_one('.fa-trophy')
-
-            if experience_element:
-                experience_container = experience_element.parent.parent
-                experience = experience_container.get_text(strip=True)
-            else:
-                experience = None
-
-            # Time Posted
-            if time_element:
-                posted_text = time_element.get_text(strip=True)
-            else:
-                posted_text = None
-
-            posted_at = self.parse_posted_time(posted_text)
-
-            # Description
-            description_element = card.select_one(
-                '.collapse .fs-sm.fw-regular'
+            company_element = card.select_one(
+                ".text-neutral-1000.hover\\:underline.focus\\:no-underline"
             )
 
-            description = (
-                description_element.get_text(strip=True)
-                if description_element
-                else None
-            )
+            company = company_element.get_text(strip=True) if company_element else None
 
-            logo_element = card.select_one('.flex.h-14.w-14.justify-center.overflow-hidden.rounded-2xl.border.border-gray-400.bg-gray-100 img')
+            logo_element = card.select_one(
+                ".flex.h-14.w-14.justify-center.overflow-hidden.rounded-2xl.border.border-gray-400.bg-gray-100 img"
+            )
 
             if logo_element:
                 logo_src = logo_element.get("src")
@@ -147,34 +87,127 @@ class WellfoundParser:
             else:
                 company_logo = None
 
-            # Job ID
-            job_id = card.get("id")
+            # -----------------------------------
+            # FIND ALL POSITIONS IN THIS COMPANY
+            # -----------------------------------
 
-            jobs.append({
-                "source":"wellfound",
-                "id": job_id,
-                "title": (
-                    title_element.get_text(strip=True)
-                    if title_element
+            positions = card.select(
+                "div.min-h-\\[50px\\].items-end.justify-between.rounded-2xl.px-2.py-2.sm\\:flex"
+            )
+
+            for position in positions:
+
+                # Job title + URL
+                link_element = position.select_one(
+                    "a.mr-2.text-sm.font-semibold.text-brand-burgandy.hover\\:underline"
+                )
+
+                title = link_element.get_text(strip=True) if link_element else None
+
+                url = (
+                    "https://wellfound.com" + link_element.get("href")
+                    if link_element and link_element.get("href")
+                    else "https://wellfound.com"
+                )
+
+                # -----------------------------------
+                # SALARY + LOCATION
+                # -----------------------------------
+
+                info_elements = position.find_all("span", class_="pl-1 text-xs")
+
+                salary = None
+                location = None
+                remote_type = False
+
+                for element in info_elements:
+                    text = element.get_text(" ", strip=True)
+
+                    if "$" in text:
+                        salary = text
+                    else:
+                        location = text
+
+                        if "remote" in text.lower():
+                            remote_type = True
+
+                # -----------------------------------
+                # EXPERIENCE
+                # -----------------------------------
+
+                experience_element = position.select_one(".fa-trophy")
+
+                if experience_element:
+                    experience_container = experience_element.parent.parent
+                    experience = experience_container.get_text(strip=True)
+                else:
+                    experience = None
+
+                # -----------------------------------
+                # POSTED DATE
+                # -----------------------------------
+
+                time_element = position.select_one(
+                    ".text-xs.lowercase.text-dark-a.md\\:hidden"
+                )
+
+                if time_element:
+                    posted_text = time_element.get_text(strip=True)
+                else:
+                    # Desktop version
+                    time_element = position.select_one(".text-xs.lowercase.text-dark-a")
+
+                    posted_text = (
+                        time_element.get_text(strip=True) if time_element else None
+                    )
+
+                posted_at = self.parse_posted_time(posted_text)
+
+                # -----------------------------------
+                # DESCRIPTION
+                # -----------------------------------
+
+                description_element = position.select_one(".collapse .fs-sm.fw-regular")
+
+                description = (
+                    description_element.get_text(strip=True)
+                    if description_element
                     else None
-                ),
-                "company": (
-                    company_element.get_text(strip=True)
-                    if company_element
-                    else None
-                ),
-                "company_logo": company_logo,
-                "url": (
-                    link_element.get("href")
-                    if link_element
-                    else None
-                ),
-                "location": location,
-                "remote": remote_type,
-                "salary": salary,
-                "experience": experience,
-                "description": description,
-                "posted_at": posted_at,
-            })
+                )
+
+                # -----------------------------------
+                # JOB ID
+                # -----------------------------------
+
+                job_id = None
+
+                if link_element and link_element.get("href"):
+                    href = link_element.get("href")
+
+                    match = re.search(r"/jobs/(\d+)", href)
+
+                    if match:
+                        job_id = match.group(1)
+
+                # -----------------------------------
+                # CREATE ONE JOB
+                # -----------------------------------
+
+                jobs.append(
+                    {
+                        "source": "Wellfound",
+                        "source_job_id": job_id,
+                        "title": title,
+                        "company": company,
+                        "company_logo": company_logo,
+                        "url": url,
+                        "location": location,
+                        "remote": remote_type,
+                        "salary": salary,
+                        "experience": experience,
+                        "description": description,
+                        "posted_at": posted_at,
+                    }
+                )
 
         return jobs

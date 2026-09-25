@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 
     experience_level VARCHAR(100),
     employment_type VARCHAR(100),
-    remote_type VARCHAR(100),
+    remote_type boolean,
 
     salary_min NUMERIC,
     salary_max NUMERIC,

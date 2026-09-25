@@ -1,36 +1,41 @@
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
 
 
 class BuiltInScraper:
-
     BASE_URL = "https://builtin.com"
 
-    def __init__(self, headless=True):
+    def __init__(self, headless=True, pages=3):
         self.headless = headless
+        self.pages = pages
 
-    def fetch_page(self, url: str) -> str:
-        with sync_playwright() as p:
+    async def fetch_page(self, url: str) -> str:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=self.headless)
 
-            browser = p.chromium.launch(
-                headless=self.headless
-            )
+            page = await browser.new_page()
 
-            page = browser.new_page()
+            await page.goto(url, wait_until="domcontentloaded")
+            await page.wait_for_timeout(2000)
 
-            page.goto(
-                url,
-                wait_until="domcontentloaded"
-            )
+            html = await page.content()
 
-            page.wait_for_timeout(2000)
-
-            html = page.content()
-
-            browser.close()
+            await browser.close()
 
             return html
 
-    def fetch_jobs_page(self) -> str:
-        url = f"{self.BASE_URL}/jobs"
+    async def fetch_jobs_page(self) -> str:
+        pages = []
 
-        return self.fetch_page(url)
+        for page_number in range(1, self.pages + 1):
+            if page_number == 1:
+                url = f"{self.BASE_URL}/jobs"
+            else:
+                url = f"{self.BASE_URL}/jobs?page={page_number}"
+
+            print(f"Fetching Built In page {page_number}...")
+
+            html = await self.fetch_page(url)
+
+            pages.append(html)
+
+        return "\n".join(pages)

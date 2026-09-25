@@ -4,11 +4,11 @@ from app.ingestion.deduplicator import job_exists
 from app.database.repositories import insert_job
 
 
-def run_pipeline(scraper, parser, source_name):
+async def run_pipeline(scraper, parser, source_name):
 
     print(f"Starting {source_name} ingestion...")
 
-    html = scraper.fetch_jobs_page()
+    html = await scraper.fetch_jobs_page()
 
     print("Page downloaded.")
 

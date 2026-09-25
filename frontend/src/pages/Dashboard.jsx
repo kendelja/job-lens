@@ -8,14 +8,91 @@ function Dashboard() {
     const [sourceFilter, setSourceFilter] = useState("all");
 
     useEffect(() => {
-        fetch("http://localhost:8000/jobs/")
-            .then((response) => response.json())
-            .then((data) => setJobs(data))
-            .catch((error) => {
-                console.error("Failed to fetch jobs:", error);
-            });
+        async function loadJobs() {
+            try {
+                const response = await fetch(
+                    "http://localhost:8000/jobs/"
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch jobs");
+                }
+
+                const data = await response.json();
+                setJobs(data);
+            } catch (error) {
+                console.error("Failed to load jobs:", error);
+            }
+        }
+
+        loadJobs();
     }, []);
 
+    async function handleRefresh() {
+        try {
+            await fetch("http://localhost:8000/jobs/ingest", {
+                method: "POST",
+            });
+
+            const response = await fetch("http://localhost:8000/jobs/");
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch jobs");
+            }
+
+            const data = await response.json();
+
+            setJobs(data);
+        } catch (error) {
+            console.error("Unable to update jobs:", error);
+        }
+    }
+
+    function formatPostedTime(postedAt) {
+        if (!postedAt) {
+            return "Unknown";
+        }
+
+        const postedDate = new Date(postedAt);
+        const now = new Date();
+
+        const seconds = Math.floor(
+            (now - postedDate) / 1000
+        );
+
+        if (seconds < 60) {
+            return `${seconds} second${seconds === 1 ? "" : "s"} ago`;
+        }
+
+        const minutes = Math.floor(seconds / 60);
+
+        if (minutes < 60) {
+            return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+        }
+
+        const hours = Math.floor(minutes / 60);
+
+        if (hours < 24) {
+            return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+        }
+
+        const days = Math.floor(hours / 24);
+
+        if (days === 1) {
+            return "Yesterday";
+        }
+
+        if (days < 7) {
+            return `${days} days ago`;
+        }
+
+        return postedDate.toLocaleDateString("en-CA", {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        });
+    }
+    
     const filteredJobs = jobs.filter((job) => {
         const searchText = search.toLowerCase();
 
@@ -33,6 +110,7 @@ function Dashboard() {
 
         return matchesSearch && matchesRemote && matchesSource;
     });
+
 
     return (
         <div className="app">
@@ -111,6 +189,10 @@ function Dashboard() {
                         </option>
                     </select>
 
+                    <button onClick={handleRefresh}>
+                        Find New Jobs
+                    </button>
+
                 </section>
 
 
@@ -157,7 +239,6 @@ function Dashboard() {
                                     </div>
 
                                     <div className="job-meta">
-
                                         {job.location && (
                                             <span>
                                                 📍 {job.location}
@@ -170,6 +251,11 @@ function Dashboard() {
                                             </span>
                                         )}
 
+                                        {job.posted_at && (
+                                            <span>
+                                                {formatPostedTime(job.posted_at)}
+                                            </span>
+                                        )}
                                     </div>
 
                                 </div>

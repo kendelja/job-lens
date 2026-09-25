@@ -52,7 +52,6 @@ def insert_job(job: Job):
                     job.salary_max
                 )
             )
-
         connection.commit()
 
     finally:

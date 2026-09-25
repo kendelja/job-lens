@@ -20,7 +20,7 @@ class Job:
 
     experience_level: Optional[str]
     employment_type: Optional[str]
-    remote_type: Optional[str]
+    remote_type: Optional[bool]
 
     salary_min: Optional[float]
     salary_max: Optional[float]
